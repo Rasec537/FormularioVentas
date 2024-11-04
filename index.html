@@ -1,0 +1,229 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Venta</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            background-color: #FFF0F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .invoice-container {
+            background-color: #FFFAFA;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1200px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #FF69B4;
+        }
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .header div {
+            flex: 1 1 48%;
+            min-width: 150px;
+        }
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid #FFD1DC;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #FFB6C1;
+            color: #ffffff;
+        }
+        .totals {
+            text-align: right;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .totals label, .totals input {
+            margin: 5px 0;
+        }
+        .totals input {
+            width: 120px;
+            text-align: right;
+            border: none;
+            background-color: #FFF5F7;
+            font-weight: bold;
+        }
+        .product-description {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .product-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        .large-image {
+            margin-top: 20px;
+            display: none;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #FF69B4;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #FF85B3;
+        }
+        @media (max-width: 768px) {
+            .header div {
+                flex: 1 1 100%;
+            }
+            .totals input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-container">
+    <h2>Formulario de Venta</h2>
+    <div class="header">
+        <div>
+            <label>Número de Venta: <input type="text" id="saleNumber"></label>
+        </div>
+        <div>
+            <label>Fecha: <input type="date" id="date" value="2023-01-01"></label>
+        </div>
+        <div>
+            <label>Cliente: <input type="text" id="clientName"></label>
+        </div>
+        <div>
+            <label>Teléfono: <input type="tel" id="phone"></label>
+        </div>
+        <div>
+            <label>Dirección: <input type="text" id="address"></label>
+        </div>
+        <div>
+            <label>E-mail: <input type="email" id="email"></label>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Cantidad</th>
+                <th>Descripción</th>
+                <th>Precio Unitario</th>
+                <th>Importe</th>
+                <th>Impuesto</th>
+                <th>Precio Total e Impuesto</th>
+            </tr>
+        </thead>
+        <tbody id="products">
+            <!-- Filas de productos generadas por JavaScript -->
+        </tbody>
+    </table>
+
+    <button onclick="addProductRow()">Agregar Producto</button>
+
+    <div class="totals">
+        <label>Subtotal: <input type="text" id="subtotal" readonly></label>
+        <label>IVA: <input type="text" id="totalTax" readonly></label>
+        <label>Total Cantidad: <input type="text" id="totalQuantity" readonly></label>
+        <label>Total General: <input type="text" id="grandTotal" readonly></label>
+    </div>
+
+    <img id="largeImage" class="large-image" src="" alt="Imagen del producto">
+    <p id="productDescription" class="large-image"></p>
+</div>
+
+<script>
+    const productsList = [
+        { name: "Laptop", price: 500, description: "Laptop de alta gama", image:"ventas/laptop.jpg" },
+        { name: "Impresora", price: 150, description: "Impresora multifuncional", image: "ventas/impresora.jpg" },
+        { name: "Teclado", price: 20, description: "Teclado mecánico", image: "ventas/teclado.jpg" },
+        { name: "Ratón", price: 10, description: "Ratón óptico", image: "ventas/raton.jpg" },
+        { name: "Monitor", price: 200, description: "Monitor Full HD", image: "ventas/monitor.jpg" }
+    ];
+
+    function addProductRow() {
+        const table = document.getElementById("products");
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><input type="number" value="1" min="1" class="quantity" oninput="calculateSubtotal(this)"></td>
+            <td>
+                <div class="product-description">
+                    <select class="description" onchange="updateProductDetails(this)">
+                        <option value="">Seleccione un producto</option>
+                        ${productsList.map(product => `<option value="${product.name}">${product.name}</option>`).join("")}
+                    </select>
+                    <img class="product-image" src="" alt="Imagen de producto" />
+                </div>
+            </td>
+            <td><input type="text" class="unit-price" readonly></td>
+            <td><input type="text" class="amount" readonly></td>
+            <td><input type="text" class="tax" readonly></td>
+            <td><input type="text" class="total" readonly></td>
+        `;
+
+        table.appendChild(row);
+    }
+
+    function updateProductDetails(selectElement) {
+        const selectedProduct = productsList.find(product => product.name === selectElement.value);
+        const row = selectElement.closest("tr");
+        
+        if (selectedProduct) {
+            row.querySelector(".unit-price").value = selectedProduct.price;
+            row.querySelector(".amount").value = selectedProduct.price;
+            row.querySelector(".tax").value = (selectedProduct.price * 0.13).toFixed(2); 
+            row.querySelector(".total").value = (selectedProduct.price * 1.13).toFixed(2);
+            
+            const productImage = row.querySelector(".product-image");
+            productImage.src = selectedProduct.image;
+            productImage.alt = selectedProduct.description;
+        }
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
