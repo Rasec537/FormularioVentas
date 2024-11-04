@@ -1,2 +1,4 @@
-# FormularioVentas
-Trabajo Bimestral - Jhoselin Poma
+FORMULARIO DE VENTA
+PROYECTO FINAL -DISEÑO WEB
+ESTUDIANTE:JHOSELIN POMA
+
